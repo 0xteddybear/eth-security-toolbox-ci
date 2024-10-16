@@ -65,16 +65,10 @@ COPY --chown=root:root --from=echidna /usr/local/bin/echidna /usr/local/bin/echi
 COPY --chown=root:root --from=medusa /usr/local/bin/medusa /usr/local/bin/medusa
 RUN medusa completion bash > /etc/bash_completion.d/medusa
 
-# Add a user with passwordless sudo
-RUN useradd -m ethsec && \
-    usermod -aG sudo ethsec && \
-    echo 'ethsec ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-
-##### user-level setup follows
 ##### Things should be installed in $HOME from now on
-USER ethsec
-WORKDIR /home/ethsec
-ENV HOME="/home/ethsec"
+USER root
+WORKDIR /root
+ENV HOME="/root"
 ENV PATH="${PATH}:${HOME}/.local/bin:${HOME}/.vyper/bin:${HOME}/.foundry/bin"
 
 # Install vyper compiler
@@ -97,7 +91,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/foundry-rs/foundry/ded0317584bd
     done
 
 # Install python tools
-RUN pip3 install --no-cache-dir --user \
+RUN pip3 install --no-cache-dir \
     pyevmasm \
     solc-select \
     crytic-compile \
